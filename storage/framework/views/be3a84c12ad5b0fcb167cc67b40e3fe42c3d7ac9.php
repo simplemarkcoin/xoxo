@@ -1,0 +1,1 @@
+<?php /**PATH /home/remedycodes/public_html/pro.remedycodes.online/resources/views/home/trading-conditions.blade.php ENDPATH**/ ?>

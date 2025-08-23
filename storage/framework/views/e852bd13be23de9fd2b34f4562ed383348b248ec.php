@@ -1,0 +1,1 @@
+<?php /**PATH /home/vkhpudlm/welthguild.simplemarkcoin.net/resources/views/home/trading-conditions.blade.php ENDPATH**/ ?>
