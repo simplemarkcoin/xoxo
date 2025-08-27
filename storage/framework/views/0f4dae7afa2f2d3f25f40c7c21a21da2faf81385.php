@@ -1,0 +1,1 @@
+<?php /**PATH C:\xampp\htdocs\app\resources\views\admin\Settings\SubscriptionSettings\subscription.blade.php ENDPATH**/ ?>

@@ -1,0 +1,1 @@
+<?php /**PATH C:\xampp\htdocs\app\resources\views\home\trading-conditions.blade.php ENDPATH**/ ?>

@@ -1,0 +1,2 @@
+<turbo-echo-stream-source channel="<?php echo e($channel); ?>" type="<?php echo e($type); ?>" <?php echo e($attributes); ?>></turbo-echo-stream-source>
+<?php /**PATH C:\xampp\htdocs\app\vendor\tonysm\turbo-laravel\resources\views\components\stream-from.blade.php ENDPATH**/ ?>
