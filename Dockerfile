@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y \
     curl \
     libonig-dev \
     libxml2-dev \
+    netcat-traditional \
     && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 
 # Install Composer
@@ -19,13 +20,15 @@ COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www
 
-# Copy code
 COPY . .
 
-# Install dependencies
-RUN composer install --optimize-autoloader --no-dev
+# Install dependencies (skip extensions you may add later)
+RUN composer install --optimize-autoloader --ignore-platform-req=ext-gmp --ignore-platform-req=ext-zip --no-scripts
 
-# Laravel permissions
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
-CMD ["php-fpm"]
+# Copy and set up entrypoint
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+ENTRYPOINT ["docker-entrypoint.sh"]
