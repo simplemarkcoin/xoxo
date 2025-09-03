@@ -13,6 +13,7 @@ RUN apt-get update && apt-get install -y \
     libonig-dev \
     libxml2-dev \
     netcat-traditional \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 
 # Install Composer
@@ -20,11 +21,14 @@ COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www
 
-COPY . .
-
-# Install dependencies (skip extensions you may add later)
+# Copy composer files first (better caching)
+COPY composer.json composer.lock ./
 RUN composer install --optimize-autoloader --ignore-platform-req=ext-gmp --ignore-platform-req=ext-zip --no-scripts
 
+# Copy rest of application
+COPY . .
+
+# Set permissions
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
 # Copy and set up entrypoint
