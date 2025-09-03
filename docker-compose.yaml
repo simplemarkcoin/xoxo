@@ -11,11 +11,10 @@ services:
       APP_KEY: ${APP_KEY}
       DB_HOST: mysql        # make sure this matches your existing MySQL container name
       DB_PORT: 3306
-      DB_DATABASE: ${DB_DATABASE:-laravel}
-      DB_USERNAME: ${DB_USERNAME:-laravel}
-      DB_PASSWORD: ${DB_PASSWORD:-secret}
-      MIGRATE_DB: ${MIGRATE_DB:-true}
-    volumes:
+      DB_DATABASE: mysql
+      DB_USERNAME: laraveldb
+      DB_PASSWORD: root
+      
       - ./storage:/var/www/storage
       - ./bootstrap/cache:/var/www/bootstrap/cache
     networks:
