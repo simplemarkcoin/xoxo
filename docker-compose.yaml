@@ -4,38 +4,33 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile
-    environment:
-      APP_ENV: ${APP_ENV:-production}
-      APP_DEBUG: ${APP_DEBUG:-false}
-      APP_KEY: ${APP_KEY}
-      DB_HOST: mysql        # make sure this matches your existing MySQL container name
-      DB_PORT: 3306
-      DB_DATABASE: mysql
-      DB_USERNAME: remedydb
-      DB_PASSWORD: root
-      
-      - ./storage:/var/www/storage
-      - ./bootstrap/cache:/var/www/bootstrap/cache
-    networks:
-      - nginxpm
+      dockerfile: docker/app/Dockerfile
+    container_name: laravel_app
     restart: unless-stopped
-    external_links:
-      - mysql
+    expose:
+      - 9000
+    networks:
+      - laravel_network
+      - db_network
 
-  web:
-    image: nginx:alpine
+  nginx:
+    image: nginx:stable-alpine
+    container_name: laravel_nginx
+    restart: unless-stopped
     volumes:
-      - .:/var/www
-      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+      - ./docker/nginx/nginx.prod.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
       - app
     networks:
-      - nginxpm
-    restart: unless-stopped
-    # Nginx Proxy Manager will handle external access
+      - laravel_network
+      - db_network
+      - nginxpm   # connect to NPM network
 
 networks:
-  nginxpm:
+  laravel_network:
+    driver: bridge
+  db_network:
     external: true
-    name: nginxpm
+    name: db_network
+  nginxpm:
+    external: true # this is your Nginx Proxy Manager network
