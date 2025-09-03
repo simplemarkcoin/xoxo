@@ -1,44 +1,42 @@
-version: ‘3.8’
+version: '3.8'
 
 services:
-app:
-build:
-context: .
-dockerfile: Dockerfile
-environment:
-APP_ENV: ${APP_ENV:-production}
-APP_DEBUG: ${APP_DEBUG:-false}
-APP_KEY: ${APP_KEY}
-DB_HOST: mysql
-DB_PORT: 3306
-DB_DATABASE: ${DB_DATABASE:-laravel}
-DB_USERNAME: ${DB_USERNAME:-laravel}
-DB_PASSWORD: ${DB_PASSWORD:-secret}
-MIGRATE_DB: ${MIGRATE_DB:-true}
-volumes:
-- ./storage:/var/www/storage
-- ./bootstrap/cache:/var/www/bootstrap/cache
-networks:
-- nginxpm
-restart: unless-stopped
-depends_on:
-- mysql
-external_links:
-- mysql
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      APP_ENV: ${APP_ENV:-production}
+      APP_DEBUG: ${APP_DEBUG:-false}
+      APP_KEY: ${APP_KEY}
+      DB_HOST: mysql        # make sure this matches your existing MySQL container name
+      DB_PORT: 3306
+      DB_DATABASE: ${DB_DATABASE:-laravel}
+      DB_USERNAME: ${DB_USERNAME:-laravel}
+      DB_PASSWORD: ${DB_PASSWORD:-secret}
+      MIGRATE_DB: ${MIGRATE_DB:-true}
+    volumes:
+      - ./storage:/var/www/storage
+      - ./bootstrap/cache:/var/www/bootstrap/cache
+    networks:
+      - nginxpm
+    restart: unless-stopped
+    external_links:
+      - mysql
 
-web:
-image: nginx:alpine
-volumes:
-- .:/var/www
-- ./docker/nginx/conf.d:/etc/nginx/conf.d
-depends_on:
-- app
-networks:
-- nginxpm
-restart: unless-stopped
-# Nginx Proxy Manager will handle external access
+  web:
+    image: nginx:alpine
+    volumes:
+      - .:/var/www
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - app
+    networks:
+      - nginxpm
+    restart: unless-stopped
+    # Nginx Proxy Manager will handle external access
 
 networks:
-nginxpm:
-external: true
-name: nginxpm
+  nginxpm:
+    external: true
+    name: nginxpm
