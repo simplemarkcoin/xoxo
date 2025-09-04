@@ -5,37 +5,59 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: laravel_app
-    restart: unless-stopped
-    expose:
-      - 9000   # PHP-FPM port
     volumes:
       - .:/var/www
+    depends_on:
+      - db
     networks:
-      - laravel_network
-      - db_network
+      - laravel
 
-  nginx:
-    image: nginx:stable-alpine
-    container_name: laravel_nginx
-    restart: unless-stopped
+  web:
+    image: nginx:alpine
+    ports:
+      - "8080:80"   # localhost:8080
     volumes:
       - .:/var/www
-      - ./docker/nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d
     depends_on:
       - app
     networks:
-      - laravel_network
-      - db_network
-      - nginxpm
+      - laravel
+
+  db:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: laravel
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: secret
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - laravel
+
+  # Add phpMyAdmin
+  phpmyadmin:
+    image: phpmyadmin:latest
+    ports:
+      - "8081:80"   # localhost:8081
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_ARBITRARY: 1
+      UPLOAD_LIMIT: 20M
+      MEMORY_LIMIT: 512M
+    networks:
+      - laravel
+    depends_on:
+      - db
+    logging:
+      driver: "none"  # This kills phpMyAdmin logs completely
 
 networks:
-  laravel_network:
-    driver: bridge
+  laravel:
 
-  db_network:
-    external: true
-    name: db_network
-
-  nginxpm:
-    external: true
+volumes:
+  db_data:
