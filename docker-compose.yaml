@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   app:
     build:
@@ -10,19 +8,7 @@ services:
     depends_on:
       - db
     networks:
-      - laravel
-
-  web:
-    image: nginx:alpine
-    ports:
-      - "8080:80"   # localhost:8080
-    volumes:
-      - .:/var/www
-      - ./docker/nginx/conf.d:/etc/nginx/conf.d
-    depends_on:
-      - app
-    networks:
-      - laravel
+      - nginxpm
 
   db:
     image: mysql:8
@@ -36,13 +22,12 @@ services:
     volumes:
       - db_data:/var/lib/mysql
     networks:
-      - laravel
+      - nginxpm
 
-  # Add phpMyAdmin
   phpmyadmin:
     image: phpmyadmin:latest
     ports:
-      - "8081:80"   # localhost:8081
+      - "8081:80"
     environment:
       PMA_HOST: db
       PMA_PORT: 3306
@@ -50,14 +35,15 @@ services:
       UPLOAD_LIMIT: 20M
       MEMORY_LIMIT: 512M
     networks:
-      - laravel
+      - nginxpm
     depends_on:
       - db
     logging:
-      driver: "none"  # This kills phpMyAdmin logs completely
+      driver: "none"
 
 networks:
-  laravel:
+  nginxpm:
+    external: true
 
 volumes:
   db_data:
